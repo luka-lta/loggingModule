@@ -13,35 +13,40 @@ use Throwable;
 
 final class LoggingModule extends AbstractLogger
 {
+    private string $webhook;
+
+    /**
+     * @throws LoggingException
+     */
     public function __construct(private readonly EmbedMapping $embedMapping)
     {
+        $this->webhook = EnvironmentRepository::get('DISCORD_WEBHOOK_URL');
     }
 
     public function log($level, Stringable|string $message, array $context = []): void
     {}
 
-    /**
-     * @throws LoggingException
-     */
     public function logWithDiscordMessage(string $level, string $action, Stringable|string $message, array $context = []): void
     {
-        $webhook = EnvironmentRepository::get('DISCORD_WEBHOOK_URL');
         if ($level === LogLevel::INFO) {
             $this->embedMapping->setInfoEmbed($action, $message, $context);
+            $embedData = json_encode($this->embedMapping->getEmbedData());
+            $this->sendEmbed($embedData);
         }
     }
 
-    /**
-     * @throws LoggingException
-     */
     public function logErrorWithDiscordMessage(Throwable $throwable): void
     {
-        $webhook = EnvironmentRepository::get('DISCORD_WEBHOOK_URL');
         $this->embedMapping->setErrorEmbed($throwable);
         $embedData = json_encode($this->embedMapping->getEmbedData());
+        $this->sendEmbed($embedData);
+    }
+
+    private function sendEmbed(string $embedData): void
+    {
         $ch = curl_init();
         curl_setopt_array($ch, [
-            CURLOPT_URL => $webhook,
+            CURLOPT_URL => $this->webhook,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $embedData,
             CURLOPT_HTTPHEADER => [
