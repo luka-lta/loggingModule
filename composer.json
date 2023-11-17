@@ -1,0 +1,22 @@
+{
+    "name": "luka-lta/logging-module",
+    "type": "library",
+    "version": "0.1.0",
+    "stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "LoggingModule\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "luka-lta"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "php-di/php-di": "^7.0",
+        "psr/log": "^3.0",
+        "ext-curl": "*"
+    }
+}
