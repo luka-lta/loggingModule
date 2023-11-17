@@ -76,7 +76,7 @@ class EmbedMapping
                         ],
                         [
                             "name" => "Context",
-                            "value" => json_encode($context),
+                            "value" => "```" . json_encode($context) . "```",
                             "inline" => false
                         ]
                     ]
