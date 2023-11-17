@@ -55,6 +55,36 @@ class EmbedMapping
         ];
     }
 
+    public function setInfoEmbed(string $action, string $message, array $context = []): void
+    {
+        $this->embedData = [
+            "embeds" => [
+                [
+                    "title" => $action,
+                    "type" => "rich",
+                    "timestamp" => date('Y-m-d H:i:s'),
+                    "color" => hexdec('edb832'),
+                    "footer" => [
+                        "text" => "Logger | Info",
+                        "icon_url" => $this->avatarUrl
+                    ],
+                    "fields" => [
+                        [
+                            "name" => "Message",
+                            "value" => $message,
+                            "inline" => false
+                        ],
+                        [
+                            "name" => "Context",
+                            "value" => json_encode($context),
+                            "inline" => false
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    }
+
     public function getEmbedData(): array
     {
         return array_merge($this->getDefaultEmbedData(), $this->embedData);
