@@ -28,19 +28,36 @@ final class LoggingModule extends AbstractLogger
 
     public function logWithDiscordMessage(string $level, string $action, Stringable|string $message, array $context = []): void
     {
+        $this->log($level, $message, $context);
         if ($level === LogLevel::INFO) {
             $this->embedMapping->setInfoEmbed($action, $message, $context);
-            $embedData = json_encode($this->embedMapping->getEmbedData());
-            $this->sendEmbed($embedData);
+            $this->sendEmbed(json_encode($this->embedMapping->getEmbedData()));
+        }
+
+        if ($level === LogLevel::NOTICE) {
+            $this->embedMapping->setCustomEmbed(LogLevel::NOTICE, $action, '', $context);
+            $this->sendEmbed(json_encode($this->embedMapping->getEmbedData()));
         }
     }
 
-    public function logErrorWithDiscordMessage(Throwable $throwable): void
+    public function logErrorWithDiscordMessage(Stringable|string $message, ?Throwable $throwable, array $additionalData = []): void
     {
+        if (!$throwable) {
+            $this->error($message, $additionalData);
+            $this->embedMapping->setCustomEmbed(LogLevel::ERROR, 'Error', $message, $additionalData);
+            $this->sendEmbed(json_encode($this->embedMapping->getEmbedData()));
+            return;
+        }
+        $this->error($throwable->getMessage(), [
+            'trace' => $throwable,
+            'file' => $throwable->getFile(),
+            'line' => $throwable->getLine(),
+            'additionalData' => $additionalData
+        ]);
         $this->embedMapping->setErrorEmbed($throwable);
-        $embedData = json_encode($this->embedMapping->getEmbedData());
-        $this->sendEmbed($embedData);
+        $this->sendEmbed(json_encode($this->embedMapping->getEmbedData()));
     }
+
 
     private function sendEmbed(string $embedData): void
     {

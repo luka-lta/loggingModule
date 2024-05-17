@@ -22,6 +22,8 @@ class EmbedMapping
         return [
             'username'   => $this->webhookTag,
             'avatar_url' => $this->avatarUrl,
+            "type" => "rich",
+            "timestamp" => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -31,8 +33,6 @@ class EmbedMapping
             "embeds" => [
                 [
                     "title" => "Error",
-                    "type" => "rich",
-                    "timestamp" => date('Y-m-d H:i:s'),
                     "color" => hexdec('c20b08'),
                     "footer" => [
                         "text" => "Logger | Error",
@@ -61,8 +61,6 @@ class EmbedMapping
             "embeds" => [
                 [
                     "title" => $action,
-                    "type" => "rich",
-                    "timestamp" => date('Y-m-d H:i:s'),
                     "color" => hexdec('edb832'),
                     "footer" => [
                         "text" => "Logger | Info",
@@ -80,6 +78,23 @@ class EmbedMapping
                             "inline" => false
                         ]
                     ]
+                ]
+            ]
+        ];
+    }
+
+    public function setCustomEmbed(string $logType, string $action, string $hexColor, array $fields = []): void
+    {
+        $this->embedData = [
+            "embeds" => [
+                [
+                    "title" => $action,
+                    "color" => hexdec($hexColor),
+                    "footer" => [
+                        "text" => "Logger | " . $logType,
+                        "icon_url" => $this->avatarUrl
+                    ],
+                    "fields" => $fields
                 ]
             ]
         ];
